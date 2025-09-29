@@ -1,13 +1,39 @@
-from flask import Blueprint, request, jsonify
-from .tipo_model import TipoNaoEncontrado, listar_tipos, adicionar_tipo, atualizar_tipo, excluir_tipo
+from typing import List, Optional
 
-tipos_blueprint = Blueprint('tipos', __name__)
+from flask import jsonify, request
+from flask_openapi3 import APIBlueprint, Tag
+from pydantic import BaseModel, RootModel
 
-@tipos_blueprint.route('/tipos', methods=['GET'])
+from config import db
+
+from .tipo_model import (TipoNaoEncontrado, adicionar_tipo, atualizar_tipo,
+                         excluir_tipo, listar_tipos)
+
+tipo_tag = Tag(name="tipos", description="Operações relacionadas a tipos")
+tipo_bp = APIBlueprint('tipo_routes', __name__, url_prefix='/tipos', abp_tags=[tipo_tag])
+
+class TipoOut(BaseModel):
+    id: int
+    nome: str
+
+# Para lista de tipos (RootModel para Pydantic v2)
+class TipoListOut(RootModel[List[TipoOut]]):
+    pass
+
+# Mensagem de sucesso genérica
+class MessageResponse(BaseModel):
+    message: str
+
+# Mensagem de erro padrão
+class ErrorResponse(BaseModel):
+    message: str
+    error: Optional[str] = None
+
+@tipo_bp.get('/tipos', summary='Listar itens', tags=[tipo_tag], responses={200: TipoListOut, 404: ErrorResponse})
 def get_tipos():
     return jsonify(listar_tipos()), 200
 
-@tipos_blueprint.route('/tipos', methods=['POST'])
+@tipo_bp.post('/tipos', summary='Criar item', tags=[tipo_tag], responses={201: MessageResponse, 400: ErrorResponse, 500: ErrorResponse})
 def post_tippos():
     try:
         data = request.get_json()
@@ -23,7 +49,7 @@ def post_tippos():
     except ValueError as e:
         return jsonify({"message": f"Erro aos processar o nome: {str(e)}"}), 400
     
-@tipos_blueprint.route('/tipos/<int:id_tipo>', methods=['PUT'])
+@tipo_bp.put('/<int:id_tipo>', summary='Atualizar item', tags=[tipo_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
 def put_tipo(id_tipo):
     try:
         data = request.get_json()
@@ -33,7 +59,7 @@ def put_tipo(id_tipo):
     except TipoNaoEncontrado:
         return jsonify({"message": "Tipo de flor não encontrado"}), 404
     
-@tipos_blueprint.route('/tipos/<int:id_tipo>', methods=['DELETE'])
+@tipo_bp.delete('/<int:id_tipo>', summary='Excluir item', tags=[tipo_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
 def delete_aluno(id_tipo):
     try:
         excluir_tipo(id_tipo)
@@ -41,4 +67,3 @@ def delete_aluno(id_tipo):
     
     except TipoNaoEncontrado:
         return jsonify({"message": "Tipo de flor não encontrado"}), 404
-

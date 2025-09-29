@@ -1,18 +1,21 @@
 from config import db
 
+
 class Produto(db.Model):
     __tablename__ = "produtos"
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(100), nullable=False)
     quantidade = db.Column(db.Float, nullable=False)
+    preco = db.Column(db.Float, nullable=False)
     
-    tipo_id = db.Column (db.Integer, db.ForeignKey("tipo.id"), nullable=False)
+    tipo_id = db.Column (db.Integer, db.ForeignKey("tipos.id"), nullable=False)
     tipo = db.relationship("Tipo", backref="produtos")
     
-    def __init__ (self, nome, quantidade, tipo_id):
+    def __init__ (self, nome, quantidade, preco, tipo_id):
         self.nome = nome
         self.quantidade = quantidade
+        self.preco = preco
         self.tipo_id = tipo_id
         
     def to_dict(self):
@@ -20,12 +23,17 @@ class Produto(db.Model):
             'id': self.id,
             'nome': self.nome,
             'quantidade': self.quantidade,
+            'preco': self.preco,
             'tipo_id': self.tipo_id
         }
         
 class ProdutoNaoEncontrado(Exception):
     pass
 
+@classmethod
+def find_by_id(cls, id_produto):
+    return cls.query.get(id_produto)
+    
 def produto_por_id(id_produto):
     produto = Produto.query.get(id_produto)
     if not produto:

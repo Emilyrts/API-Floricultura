@@ -1,7 +1,8 @@
 from config import db
 
+
 class Tipo (db.Model):
-    __tablename__= 'tipo'
+    __tablename__= 'tipos'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(50), nullable=False)
     

@@ -1,11 +1,38 @@
-from flask import Blueprint, request, jsonify
-from .cliente_model import Cliente
-from config import db
+from typing import List, Optional
+
+from flask import jsonify, request
+from flask_openapi3 import APIBlueprint, Tag
+from pydantic import BaseModel, RootModel
 from sqlalchemy.exc import IntegrityError
 
-cliente_bp = Blueprint('cliente_bp', __name__)
+from config import db
 
-@cliente_bp.route('/clientes', methods=['POST'])
+from .cliente_model import Cliente
+
+cliente_tag = Tag(name="clientes", description="Operações relacionadas a clientes")
+
+cliente_bp = APIBlueprint('cliente_routes', __name__, url_prefix='/clientes', abp_tags=[cliente_tag])
+
+class ClienteOut(BaseModel):
+    id: int
+    nome: str
+    email: str
+    telefone: str
+
+# Lista de clientes
+class ClienteListOut(RootModel[List[ClienteOut]]):
+    pass
+
+# Mensagem de sucesso genérica
+class MessageResponse(BaseModel):
+    message: str
+
+# Mensagem de erro padrão
+class ErrorResponse(BaseModel):
+    message: str
+    error: Optional[str] = None
+
+@cliente_bp.post('/', summary='Criar cliente', tags=[cliente_tag], responses={201: ClienteListOut, 404: ErrorResponse})
 def criar_cliente():
     nome = request.json.get('nome')
     rg = request.json.get('rg')
@@ -21,17 +48,17 @@ def criar_cliente():
         return jsonify({"error": "RG já cadastrado"}), 400
     return jsonify(novo_cliente.to_dict()), 201
 
-@cliente_bp.route('/clientes', methods=['GET'])
+@cliente_bp.get('/', summary='Listar clientes', tags=[cliente_tag], responses={200: ClienteOut, 404: ErrorResponse})
 def listar_clientes():
     clientes = Cliente.query.all()
     return jsonify([cliente.to_dict() for cliente in clientes]), 200
 
-@cliente_bp.route('/clientes/<int:id>', methods=['GET'])
+@cliente_bp.get('/<int:id>', summary="Listar cliente por id",tags=[cliente_tag],  responses={201: MessageResponse, 400: ErrorResponse, 500: ErrorResponse})
 def obter_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     return jsonify(cliente.to_dict()), 200
 
-@cliente_bp.route('/clientes/<int:id>', methods=['PUT'])
+@cliente_bp.put('/<int:id>', summary="Atualizar cliente",tags=[cliente_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
 def atualizar_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     
@@ -59,7 +86,7 @@ def atualizar_cliente(id):
     return jsonify(cliente.to_dict()), 200
 
 
-@cliente_bp.route('/clientes/<int:id>', methods=['DELETE'])
+@cliente_bp.delete('/<int:id>', summary="Excluir cliente", tags=[cliente_tag], responses={204: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
 def deletar_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     db.session.delete(cliente)
