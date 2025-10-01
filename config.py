@@ -1,12 +1,10 @@
 import os
 
+from flask import Flask
 from flask_cors import CORS
-from flask_openapi3 import Info, OpenAPI
 from flask_sqlalchemy import SQLAlchemy
 
-info = Info(title="API Floricultura", version="1.0.0", description="Documentação da API Floricultura")
-
-app = OpenAPI(__name__, info=info)
+app = Flask(__name__)
 CORS(app)
 
 app.config['HOST'] = '0.0.0.0'
