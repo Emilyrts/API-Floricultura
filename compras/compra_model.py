@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from clientes.cliente_model import Cliente
 from config import db
-
+from datetime import datetime
 
 class Compra(db.Model):
     __tablename__ = "compras"

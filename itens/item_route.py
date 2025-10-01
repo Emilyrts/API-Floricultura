@@ -1,39 +1,11 @@
-from typing import List
-
-from flask import jsonify, request
-from flask_openapi3 import APIBlueprint, Tag
-from pydantic import BaseModel, RootModel
-
+from flask import Blueprint, jsonify, request
 from config import db
 from produtos.produto_model import Produto
-
 from .item_model import ItemModel
 
-class ErrorResponse(BaseModel):
-    message: str
-    error: str | None = None
-class ItemBase(BaseModel):
-    compra_id: int
-    produto_id: int
-    quantidade: float
-class ItemCreate(ItemBase):
-    pass
+item_bp = Blueprint('item_routes', __name__, url_prefix='/itens')
 
-class ItemUpdate(BaseModel):
-    quantidade: float
-class ItemOut(ItemBase):
-    id: int
-    valor_unitario: float
-    
-class ItemListOut(RootModel[List[ItemOut]]):
-    pass
-class MessageResponse(BaseModel):
-    message: str
-
-item_tag = Tag(name="itens", description="Operações relacionadas a itens")
-item_bp = APIBlueprint('item_routes', __name__, url_prefix='/itens', abp_tags=[item_tag])
-
-@item_bp.post('/', summary='Criar item', tags=[item_tag], responses={201: ItemOut, 400: ErrorResponse, 404: ErrorResponse, 500: ErrorResponse})
+@item_bp.route('/', methods=['POST'])
 def create_item():
     data = request.get_json()
 
@@ -41,7 +13,6 @@ def create_item():
         return jsonify({'message': 'Dados incompletos. É necessário fornecer compra_id, produto_id e quantidade.'}), 400
 
     produto = Produto.query.get(data['produto_id'])
-
     if not produto:
         return jsonify({'message': 'Produto não encontrado.'}), 404
     
@@ -56,7 +27,6 @@ def create_item():
     )
 
     try:
-
         produto.quantidade -= data['quantidade']
         db.session.add(produto)
         
@@ -67,19 +37,19 @@ def create_item():
         db.session.rollback()
         return jsonify({'message': 'Ocorreu um erro ao criar o item.', 'error': str(e)}), 500
 
-@item_bp.get('/<int:item_id>',  summary='Listar item por id', tags=[item_tag], responses={200: ItemOut, 404: ErrorResponse})
+@item_bp.route('/<int:item_id>', methods=['GET'])
 def get_item(item_id):
     item = ItemModel.find_by_id(item_id)
     if item:
         return jsonify(item.to_json()), 200
     return jsonify({'message': 'Item não encontrado.'}), 404
 
-@item_bp.get('/', summary='Listar itens', tags=[item_tag], responses={200: ItemListOut, 500: ErrorResponse})
+@item_bp.route('/', methods=['GET'])
 def get_all_items():
     itens = ItemModel.query.all()
     return jsonify([item.to_json() for item in itens]), 200
 
-@item_bp.put('/<int:item_id>', summary='Atualizar item', tags=[item_tag], responses={200: ItemOut, 400: ErrorResponse, 404: ErrorResponse, 500: ErrorResponse})
+@item_bp.route('/<int:item_id>', methods=['PUT'])
 def update_item(item_id):
     item = ItemModel.find_by_id(item_id)
     if not item:
@@ -99,7 +69,6 @@ def update_item(item_id):
             return jsonify({'message': 'Estoque insuficiente para realizar a alteração.'}), 400
        
         produto.quantidade += diferenca_estoque
-       
         item.quantidade = nova_quantidade
         
         db.session.add(produto)
@@ -110,7 +79,7 @@ def update_item(item_id):
         db.session.rollback()
         return jsonify({'message': 'Ocorreu um erro ao atualizar o item.', 'error': str(e)}), 500
 
-@item_bp.delete('/<int:item_id>',  summary='Excluir item', tags=[item_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
+@item_bp.route('/<int:item_id>', methods=['DELETE'])
 def delete_item(item_id):
     item = ItemModel.find_by_id(item_id)
     if not item:

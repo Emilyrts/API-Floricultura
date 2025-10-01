@@ -1,39 +1,13 @@
-from typing import List, Optional
+from flask import Blueprint, request, jsonify
+from produtos.produto_model import ProdutoNaoEncontrado, produto_por_id,listar_produtos, adicionar_produto, atualizar_produto, excluir_produto
 
-from flask import jsonify, request
-from flask_openapi3 import APIBlueprint, Tag
-from pydantic import BaseModel, RootModel
+produto_bp = Blueprint('produto_routes', __name__, url_prefix='/produtos')
 
-from config import db
-from produtos.produto_model import (ProdutoNaoEncontrado, adicionar_produto,
-                                    atualizar_produto, excluir_produto,
-                                    listar_produtos, produto_por_id)
-
-produto_tag = Tag(name="produtos", description="Operações relacionadas a produtos")
-produto_bp = APIBlueprint('produtos_routes', __name__, url_prefix='/produtos', abp_tags=[produto_tag])
-
-class ProdutoOut(BaseModel):
-    id: int
-    nome: str
-    quantidade: float
-    preco: float
-    tipo_id: int
-
-class ProdutoListOut(RootModel[List[ProdutoOut]]):
-    pass
-
-class MessageResponse(BaseModel):
-    message: str
-
-class ErrorResponse(BaseModel):
-    message: str
-    error: Optional[str] = None
-
-@produto_bp.get('/', summary='Listar produtos', tags=[produto_tag], responses={200: ProdutoOut, 500: ErrorResponse})
+@produto_bp.route('/', methods=['GET'])
 def get_produtos():
     return jsonify(listar_produtos())
 
-@produto_bp.get('/<int:id_produto>', summary='Listar produto por id', tags=[produto_tag], responses={200: ProdutoOut, 404: ErrorResponse})
+@produto_bp.route('/<int:id_produto>', methods=['GET'])
 def get_produto(id_produto):
     try:
         produto = produto_por_id(id_produto)
@@ -42,7 +16,7 @@ def get_produto(id_produto):
     except ProdutoNaoEncontrado:
         return jsonify({"message": "Produto não encontrado."}), 404
     
-@produto_bp.post('/', summary='Criar produto por id', tags=[produto_tag], responses={201: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
+@produto_bp.route('/', methods=['POST'])
 def post_produto():
     try:
         data = request.get_json()
@@ -56,7 +30,7 @@ def post_produto():
     except ValueError as e:
         return jsonify({"message": f"Erro ao processar os dados: {str(e)}"}), 400
     
-@produto_bp.put('/<int:id_produto>', summary='Atulizar produto', tags=[produto_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
+@produto_bp.route('/<int:id_produto>', methods=['PUT'])
 def put_produto(id_produto):
     try:
         data = request.get_json()
@@ -66,7 +40,7 @@ def put_produto(id_produto):
     except ProdutoNaoEncontrado:
         return jsonify({"message": "Produto não encontrado."}), 404
     
-@produto_bp.delete('/<int:id_produto>', summary='Excluir produto', tags=[produto_tag], responses={200: MessageResponse, 404: ErrorResponse, 500: ErrorResponse})
+@produto_bp.route('/<int:id_produto>', methods=['DELETE'])
 def delete_produto(id_produto):
     try:
         excluir_produto(id_produto)
