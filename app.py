@@ -7,7 +7,6 @@ from itens.item_route import item_bp
 from produtos.produto_route import produto_bp
 from tipos.tipo_route import tipo_bp
 
-# registrar APIBlueprints (não Blueprints comuns)
 app.register_api(tipo_bp)
 app.register_api(produto_bp)
 app.register_api(cliente_bp)
