@@ -18,26 +18,22 @@ class CompraOut(BaseModel):
     valor_total: float
     cliente_id: int
 
-# Lista de compras
 class CompraListOut(RootModel[List[CompraOut]]):
     pass
 
-# Mensagem de sucesso genérica
 class MessageResponse(BaseModel):
     message: str
 
-# Mensagem de erro padrão
 class ErrorResponse(BaseModel):
     message: str
     error: Optional[str] = None
 
 @compra_bp.post('/', summary="Criar compra",tags=[compra_tag], responses={201: MessageResponse, 400: ErrorResponse, 500: ErrorResponse})
 def criar_compra():
-    data_str = request.json.get('data')  # string "YYYY-MM-DD"
+    data_str = request.json.get('data') 
     valor_total = request.json.get('valor_total')
     cliente_id = request.json.get('cliente_id')
 
-    # converte para datetime.date
     data = datetime.strptime(data_str, "%Y-%m-%d").date()
 
     nova_compra = Compra(data=data, valor_total=valor_total, cliente_id=cliente_id)
@@ -66,7 +62,6 @@ def atualizar_compra(id):
     valor_total = request.json.get('valor_total')
     cliente_id = request.json.get('cliente_id')
     
-    # converter string para datetime.date
     data = datetime.strptime(data_str, "%Y-%m-%d").date()
     
     compra.data = data

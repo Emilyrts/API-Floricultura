@@ -19,15 +19,12 @@ class ClienteOut(BaseModel):
     email: str
     telefone: str
 
-# Lista de clientes
 class ClienteListOut(RootModel[List[ClienteOut]]):
     pass
 
-# Mensagem de sucesso genérica
 class MessageResponse(BaseModel):
     message: str
 
-# Mensagem de erro padrão
 class ErrorResponse(BaseModel):
     message: str
     error: Optional[str] = None
@@ -67,7 +64,6 @@ def atualizar_cliente(id):
     telefone = request.json.get('telefone')
     endereco = request.json.get('endereco')
 
-    # Verifica se o RG existe em outro cliente
     if rg and Cliente.query.filter(Cliente.rg == rg, Cliente.id != id).first():
         return jsonify({"error": "RG já cadastrado para outro cliente"}), 400
 

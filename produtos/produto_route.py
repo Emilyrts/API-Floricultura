@@ -19,15 +19,12 @@ class ProdutoOut(BaseModel):
     preco: float
     tipo_id: int
 
-# Para lista de produtos (RootModel para Pydantic v2)
 class ProdutoListOut(RootModel[List[ProdutoOut]]):
     pass
 
-# Mensagem de sucesso genérica
 class MessageResponse(BaseModel):
     message: str
 
-# Mensagem de erro padrão
 class ErrorResponse(BaseModel):
     message: str
     error: Optional[str] = None

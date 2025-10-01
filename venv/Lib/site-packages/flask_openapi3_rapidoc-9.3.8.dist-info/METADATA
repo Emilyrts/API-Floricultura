@@ -1,0 +1,22 @@
+Metadata-Version: 2.3
+Name: flask-openapi3-rapidoc
+Version: 9.3.8
+Summary: Provide RapiDoc UI for flask-openapi3.
+Project-URL: Homepage, https://github.com/luolingchun/flask-openapi3-plugins/tree/master/flask-openapi3-rapidoc
+Project-URL: Documentation, https://luolingchun.github.io/flask-openapi3/latest/Usage/UI_Templates/
+Maintainer-email: llc <luolingchun@outlook.com>
+License: MIT
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Requires-Python: >=3.8
+Requires-Dist: flask-openapi3
+Description-Content-Type: text/markdown
+
+Provide RapiDoc UI for [flask-openapi3](https://github.com/luolingchun/flask-openapi3).

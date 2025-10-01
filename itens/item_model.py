@@ -27,7 +27,6 @@ class ItemModel(db.Model):
             "valor_unitario": self.valor_unitario
         }
 
-    # Métodos de classe
     @classmethod
     def find_by_id(cls, id_item):
         return cls.query.get(id_item)

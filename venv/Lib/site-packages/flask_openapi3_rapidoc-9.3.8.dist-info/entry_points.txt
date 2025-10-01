@@ -1,0 +1,2 @@
+[flask_openapi3.plugins]
+register = flask_openapi3_rapidoc.plugins.RegisterPlugin
