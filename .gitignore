@@ -1,0 +1,39 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv
+venv/
+ENV/
+env/
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+
+# ---- Flask ----
+instance/
+*.db
+*.sqlite3
+
+# Arquivos de configuração locais (segredos, chaves etc.)
+.env
+*.env
+
+# ---- Logs ----
+*.log
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.iml
+
+# ---- Sistema Operacional ----
+.DS_Store
+Thumbs.db
+
+# ---- Coverage / Testes ----
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
