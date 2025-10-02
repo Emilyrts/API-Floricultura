@@ -1,20 +1,29 @@
 from config import app, db
-from tipo.tipo_route import tipos_blueprint
-from produtos.produto_route import produtos_bp
+from swagger.swagger_config import configure_swagger
 from clientes.cliente_route import cliente_bp
 from compras.compra_route import compra_bp
+from itens.item_route import item_bp
+from produtos.produto_route import produto_bp
+from tipos.tipo_route import tipo_bp
 
-app.register_blueprint(tipos_blueprint)
-app.register_blueprint(produtos_bp)
 app.register_blueprint(cliente_bp)
+app.register_blueprint(produto_bp)
 app.register_blueprint(compra_bp)
+app.register_blueprint(item_bp)
+app.register_blueprint(tipo_bp)
+
+@app.route("/", methods=['GET'])
+def home():
+    return "API Floricultura funcionando!"
+
+
+configure_swagger(app)
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
-    
+        db.create_all() 
     app.run(
-        host = app.config['HOST'],
-        port = app.config['PORT'],
-        debug = app.config['DEBUG']
+        host=app.config['HOST'],
+        port=app.config['PORT'],
+        debug=app.config['DEBUG']
     )

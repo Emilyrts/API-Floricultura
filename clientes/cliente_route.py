@@ -3,9 +3,9 @@ from .cliente_model import Cliente
 from config import db
 from sqlalchemy.exc import IntegrityError
 
-cliente_bp = Blueprint('cliente_bp', __name__)
+cliente_bp = Blueprint('cliente_routes', __name__, url_prefix='/clientes')
 
-@cliente_bp.route('/clientes', methods=['POST'])
+@cliente_bp.route('/', methods=['POST'])
 def criar_cliente():
     nome = request.json.get('nome')
     rg = request.json.get('rg')
@@ -21,17 +21,17 @@ def criar_cliente():
         return jsonify({"error": "RG já cadastrado"}), 400
     return jsonify(novo_cliente.to_dict()), 201
 
-@cliente_bp.route('/clientes', methods=['GET'])
+@cliente_bp.route('/', methods=['GET'])
 def listar_clientes():
     clientes = Cliente.query.all()
     return jsonify([cliente.to_dict() for cliente in clientes]), 200
 
-@cliente_bp.route('/clientes/<int:id>', methods=['GET'])
+@cliente_bp.route('/<int:id>', methods=['GET'])
 def obter_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     return jsonify(cliente.to_dict()), 200
 
-@cliente_bp.route('/clientes/<int:id>', methods=['PUT'])
+@cliente_bp.route('/<int:id>', methods=['PUT'])
 def atualizar_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     
@@ -59,7 +59,7 @@ def atualizar_cliente(id):
     return jsonify(cliente.to_dict()), 200
 
 
-@cliente_bp.route('/clientes/<int:id>', methods=['DELETE'])
+@cliente_bp.route('/<int:id>', methods=['DELETE'])
 def deletar_cliente(id):
     cliente = Cliente.query.get_or_404(id)
     db.session.delete(cliente)

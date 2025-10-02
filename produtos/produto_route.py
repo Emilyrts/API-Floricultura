@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
 from produtos.produto_model import ProdutoNaoEncontrado, produto_por_id,listar_produtos, adicionar_produto, atualizar_produto, excluir_produto
 
-produtos_bp = Blueprint('produtos', __name__)
+produto_bp = Blueprint('produto_routes', __name__, url_prefix='/produtos')
 
-@produtos_bp.route('/produtos', methods=['GET'])
+@produto_bp.route('/', methods=['GET'])
 def get_produtos():
     return jsonify(listar_produtos())
 
-@produtos_bp.route('/produtos/<int:id_produto>', methods=['GET'])
+@produto_bp.route('/<int:id_produto>', methods=['GET'])
 def get_produto(id_produto):
     try:
         produto = produto_por_id(id_produto)
@@ -16,7 +16,7 @@ def get_produto(id_produto):
     except ProdutoNaoEncontrado:
         return jsonify({"message": "Produto não encontrado."}), 404
     
-@produtos_bp.route('/produtos', methods=['POST'])
+@produto_bp.route('/', methods=['POST'])
 def post_produto():
     try:
         data = request.get_json()
@@ -30,7 +30,7 @@ def post_produto():
     except ValueError as e:
         return jsonify({"message": f"Erro ao processar os dados: {str(e)}"}), 400
     
-@produtos_bp.route('/produtos/<int:id_produto>', methods=['PUT'])
+@produto_bp.route('/<int:id_produto>', methods=['PUT'])
 def put_produto(id_produto):
     try:
         data = request.get_json()
@@ -40,7 +40,7 @@ def put_produto(id_produto):
     except ProdutoNaoEncontrado:
         return jsonify({"message": "Produto não encontrado."}), 404
     
-@produtos_bp.route('/produtos/<int:id_produto>', methods=['DELETE'])
+@produto_bp.route('/<int:id_produto>', methods=['DELETE'])
 def delete_produto(id_produto):
     try:
         excluir_produto(id_produto)
