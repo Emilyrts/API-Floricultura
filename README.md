@@ -187,4 +187,5 @@ Para rodar com Docker:
 
 ## 📈 Diagrama de Entidade-Relacionamento
 
-![Descrição da imagem](./img/diagramaFloricultura.png.png)
+
+![Diagrama](./img/diagramaFloricultura.png)
