@@ -17,7 +17,7 @@ class TipoNaoEncontrado(Exception):
 def tipo_por_id(id_tipo):
     tipo = Tipo.query.get(id_tipo)
     if not tipo:
-        raise TipoNaoEncontrado(f"Tipo não encontrado")
+        raise TipoNaoEncontrado(f"Tipo de produto não encontrado")
     return tipo.to_dict()
 
 def listar_tipos():
@@ -35,27 +35,27 @@ def adicionar_tipo(novos_dados):
     
     db.session.add(novo_tipo)
     db.session.commit()
-    return {'message': 'Novo tipo de flor adicionado com sucesso!'}, 201
+    return {'message': 'Novo tipo de produto adicionado com sucesso!'}, 201
 
 def atualizar_tipo(id_tipo, novos_dados):
         tipo = Tipo.query.get(id_tipo)
         if not tipo:
-            raise TipoNaoEncontrado (f'Tipo de flor não encontrado.')
+            raise TipoNaoEncontrado (f'Tipo de produto não encontrado.')
         
         nome_antigo = tipo.nome
         tipo.nome = novos_dados['nome']
         
         
         db.session.commit()
-        return{'message': f"Tipo de flor '{nome_antigo}' atualizado para '{tipo.nome}' com sucesso!"}, 200
+        return{'message': f"Tipo de produto '{nome_antigo}' atualizado para '{tipo.nome}' com sucesso!"}, 200
     
     
 def excluir_tipo(id_tipo):
     tipo = Tipo.query.get(id_tipo)
     if not tipo:
-        raise TipoNaoEncontrado(f'Esse tipo de flor não foi encontrado')
+        raise TipoNaoEncontrado(f'Esse tipo de produto não foi encontrado')
     
     nome_tipo = tipo.nome
     db.session.delete(tipo)
     db.session.commit()
-    return {'message': f"Tipo de flor '{nome_tipo}'excluído com sucesso!"}, 200
+    return {'message': f"Tipo de produto '{nome_tipo}'excluído com sucesso!"}, 200
