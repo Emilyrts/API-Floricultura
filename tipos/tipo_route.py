@@ -23,7 +23,7 @@ def post_tipo():
             return jsonify({"message":"Nome invélido ou ausente"}), 400
         
         novo_tipo = adicionar_tipo(data)
-        return jsonify({"message": f"Tipo de flor adicionado com sucesso!"}), 201
+        return jsonify({"message": f"Tipo de produto adicionado com sucesso!"}), 201
     
     except KeyError as e:
         return jsonify({"message": f"Faltando campo obrigatório: {(e)}"}), 400
@@ -39,13 +39,13 @@ def put_tipo(id_tipo):
         return jsonify ({"message": "Tipo atualizado com sucesso", "tipo":tipo})
     
     except TipoNaoEncontrado:
-        return jsonify({"message": "Tipo de flor não encontrado"}), 404
+        return jsonify({"message": "Tipo de produto não encontrado"}), 404
     
 @tipo_bp.route('/<int:id_tipo>', methods=['DELETE'])
 def delete_tipo(id_tipo):
     try:
         excluir_tipo(id_tipo)
-        return jsonify({"message": "Tipo de flor deletado com sucesso!"}), 200
+        return jsonify({"message": "Tipo de produto deletado com sucesso!"}), 200
     
     except TipoNaoEncontrado:
-        return jsonify({"message": "Tipo de flor não encontrado"}), 404
+        return jsonify({"message": "Tipo de produto não encontrado"}), 404
