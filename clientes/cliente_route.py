@@ -18,18 +18,18 @@ def criar_cliente():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"error": "RG já cadastrado"}), 400
-    return jsonify(novo_cliente.to_dict()), 201
+        return {"error": "RG já cadastrado"}, 400
+    return [novo_cliente.to_dict()], 201
 
 @cliente_bp.route('/', methods=['GET'])
 def listar_clientes():
     clientes = Cliente.query.all()
-    return jsonify([cliente.to_dict() for cliente in clientes]), 200
+    return [cliente.to_dict() for cliente in clientes], 200
 
 @cliente_bp.route('/<int:id>', methods=['GET'])
 def obter_cliente(id):
     cliente = Cliente.query.get_or_404(id)
-    return jsonify(cliente.to_dict()), 200
+    return cliente.to_dict(), 200
 
 @cliente_bp.route('/<int:id>', methods=['PUT'])
 def atualizar_cliente(id):
@@ -40,9 +40,8 @@ def atualizar_cliente(id):
     telefone = request.json.get('telefone')
     endereco = request.json.get('endereco')
 
-    # Verifica se o RG existe em outro cliente
     if rg and Cliente.query.filter(Cliente.rg == rg, Cliente.id != id).first():
-        return jsonify({"error": "RG já cadastrado para outro cliente"}), 400
+        return {"error": "RG já cadastrado para outro cliente"}, 400
 
 
     if nome: cliente.nome = nome
@@ -54,9 +53,9 @@ def atualizar_cliente(id):
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"error": "Erro ao atualizar cliente"}), 500
+        return {"error": "Erro ao atualizar cliente"}, 500
 
-    return jsonify(cliente.to_dict()), 200
+    return cliente.to_dict(), 200
 
 
 @cliente_bp.route('/<int:id>', methods=['DELETE'])

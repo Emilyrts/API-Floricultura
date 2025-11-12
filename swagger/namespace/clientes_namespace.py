@@ -21,7 +21,7 @@ class ClienteList(Resource):
     @api.doc('criar_cliente')
     def post(self):
         data = request.get_json()
-        return criar_cliente(data)
+        return criar_cliente()
     
 @api.route('/<int:id_cliente>')
 @api.param('id_cliente', 'ID do Cliente')
