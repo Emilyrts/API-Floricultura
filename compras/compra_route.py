@@ -1,8 +1,10 @@
+from datetime import datetime
+
+from flask import Blueprint, jsonify, request
+
 from clientes.cliente_model import Cliente
 from compras.compra_model import Compra
-from flask import Blueprint, request, jsonify
 from config import db
-from datetime import datetime
 
 compra_bp = Blueprint('compra_routes', __name__, url_prefix='/compras')
 
@@ -12,7 +14,7 @@ def criar_compra():
     valor_total = request.json.get('valor_total')
     cliente_id = request.json.get('cliente_id')
     itens = request.json.get('itens')
-    status = "Processando"
+    status = request.json.get('status')
 
     # converte para datetime.date
     data = datetime.strptime(data_str, "%Y-%m-%d").date()
@@ -33,6 +35,7 @@ def obter_compra(id):
     return jsonify(compra.to_dict()), 200
 
 from datetime import datetime
+
 
 @compra_bp.route('/<int:id>', methods=['PUT'])
 def atualizar_compra(id):
