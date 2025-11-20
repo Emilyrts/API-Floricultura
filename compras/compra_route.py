@@ -11,11 +11,13 @@ def criar_compra():
     data_str = request.json.get('data')  # string "YYYY-MM-DD"
     valor_total = request.json.get('valor_total')
     cliente_id = request.json.get('cliente_id')
+    itens = request.json.get('itens')
+    status = "Processando"
 
     # converte para datetime.date
     data = datetime.strptime(data_str, "%Y-%m-%d").date()
 
-    nova_compra = Compra(data=data, valor_total=valor_total, cliente_id=cliente_id)
+    nova_compra = Compra(data=data, valor_total=valor_total, cliente_id=cliente_id, status=status, itens=itens)
     db.session.add(nova_compra)
     db.session.commit()
     return jsonify(nova_compra.to_dict()), 201
@@ -39,12 +41,21 @@ def atualizar_compra(id):
     data_str = request.json.get('data')
     valor_total = request.json.get('valor_total')
     cliente_id = request.json.get('cliente_id')
+    itens = request.json.get('itens')
+    status = request.json.get('status')
     
     data = datetime.strptime(data_str, "%Y-%m-%d").date()
     
-    compra.data = data
-    compra.valor_total = valor_total
-    compra.cliente_id = cliente_id
+    if(data):
+      compra.data = data
+    if(valor_total):
+      compra.valor_total = valor_total
+    if(cliente_id):
+      compra.cliente_id = cliente_id
+    if(itens):
+      compra.itens = itens
+    if(status):
+      compra.status = status
     
     db.session.commit()
     return jsonify(compra.to_dict())    , 200

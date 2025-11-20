@@ -32,7 +32,7 @@ API-Floricultura/
 ├── produtos/
 │   ├── produto_model.py
 │   └── produto_routes.py
-├── swagger/    
+├── swagger/
 │   ├── namespace/
 │       ├── clientes_namespace.py
 │       ├── compras_namespace.py
